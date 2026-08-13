@@ -24,46 +24,46 @@ export default function PlaceDetailPage() {
     load();
   }, [id]);
 
-  if (loading) return <p className="text-slate-400 text-sm">Loading...</p>;
-  if (!place) return <p className="text-slate-400 text-sm">Place not found.</p>;
+  if (loading) return <p className="text-muted text-sm">Loading...</p>;
+  if (!place) return <p className="text-muted text-sm">Place not found.</p>;
 
   const inPlan = isInPlan(place.id);
 
   return (
-    <div className="max-w-2xl">
-      <button onClick={() => router.back()} className="text-sm text-emerald-700 mb-4">
+    <div className="max-w-2xl animate-fade-up">
+      <button onClick={() => router.back()} className="text-sm text-jade-light mb-4 hover:text-gold transition-colors">
         ← Back
       </button>
-      <h1 className="text-2xl font-bold text-slate-800">{place.name}</h1>
-      <span className="inline-block mt-2 text-xs px-2 py-1 rounded-full bg-emerald-100 text-emerald-800 font-medium">
+      <h1 className="font-display text-3xl text-ink">{place.name}</h1>
+      <span className="inline-block mt-3 text-xs px-2.5 py-1 rounded-full bg-surface border border-border text-muted font-medium">
         {place.category}
       </span>
 
-      <div className="h-64 my-5 rounded-xl overflow-hidden border border-slate-200">
+      <div className="h-64 my-6 rounded-xl overflow-hidden border border-border">
         <MapViewLoader places={[place]} height="100%" center={[place.latitude, place.longitude]} />
       </div>
 
-      <p className="text-slate-600 mb-4">{place.description}</p>
+      <p className="text-ink/90 leading-relaxed mb-6">{place.description}</p>
 
-      <div className="grid grid-cols-2 gap-4 text-sm mb-6">
-        <div className="bg-white border border-slate-200 rounded-lg p-3">
-          <p className="text-slate-400 text-xs">Distance</p>
-          <p className="font-medium">{place.distance_km} km</p>
+      <div className="grid grid-cols-2 gap-3 text-sm mb-8">
+        <div className="bg-surface border border-border rounded-lg p-3">
+          <p className="text-muted text-xs font-mono uppercase tracking-wide">Distance</p>
+          <p className="font-mono text-gold mt-1">{place.distance_km} km</p>
         </div>
-        <div className="bg-white border border-slate-200 rounded-lg p-3">
-          <p className="text-slate-400 text-xs">Opening Hours</p>
-          <p className="font-medium">{place.opening_hours}</p>
+        <div className="bg-surface border border-border rounded-lg p-3">
+          <p className="text-muted text-xs font-mono uppercase tracking-wide">Opening Hours</p>
+          <p className="font-mono text-ink mt-1">{place.opening_hours}</p>
         </div>
-        <div className="bg-white border border-slate-200 rounded-lg p-3 col-span-2">
-          <p className="text-slate-400 text-xs">Travel Tips</p>
-          <p className="font-medium">{place.travel_tips}</p>
+        <div className="bg-surface border border-border rounded-lg p-3 col-span-2">
+          <p className="text-muted text-xs font-mono uppercase tracking-wide">Travel Tips</p>
+          <p className="text-ink mt-1">{place.travel_tips}</p>
         </div>
       </div>
 
       <button
         onClick={() => (inPlan ? removeFromPlan(place.id) : addToPlan(place))}
-        className={`w-full sm:w-auto px-6 py-2.5 rounded-lg font-medium text-sm ${
-          inPlan ? "bg-slate-100 text-slate-600" : "bg-emerald-600 text-white hover:bg-emerald-700"
+        className={`w-full sm:w-auto px-6 py-2.5 rounded-lg font-medium text-sm transition-all ${
+          inPlan ? "bg-surface text-muted border border-border hover:text-terracotta hover:border-terracotta" : "bg-gold text-bg hover:bg-gold-hover"
         }`}
       >
         {inPlan ? "Remove from day plan" : "+ Add to day plan"}

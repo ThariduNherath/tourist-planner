@@ -1,8 +1,13 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { Fraunces, Manrope, JetBrains_Mono } from "next/font/google";
 import "leaflet/dist/leaflet.css";
 import "./globals.css";
 import { PlanProvider } from "@/components/PlanContext";
+import NavBar from "@/components/NavBar";
+
+const display = Fraunces({ subsets: ["latin"], variable: "--font-display", weight: ["500", "600"] });
+const body = Manrope({ subsets: ["latin"], variable: "--font-body" });
+const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono", weight: ["400", "500"] });
 
 export const metadata: Metadata = {
   title: "Kandy Day Visit Planner",
@@ -11,23 +16,12 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body>
+    <html lang="en" className={`${display.variable} ${body.variable} ${mono.variable}`}>
+      <body className="bg-bg text-ink min-h-screen">
         <PlanProvider>
-          <header className="sticky top-0 z-50 bg-white border-b border-slate-200">
-            <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-              <Link href="/" className="font-bold text-lg text-emerald-700">
-                🌿 Kandy Day Planner
-              </Link>
-              <nav className="flex gap-4 text-sm font-medium text-slate-600">
-                <Link href="/" className="hover:text-emerald-700">Explore</Link>
-                <Link href="/plan" className="hover:text-emerald-700">My Plan</Link>
-                <Link href="/admin/login" className="hover:text-emerald-700">Admin</Link>
-              </nav>
-            </div>
-          </header>
-          <main className="max-w-6xl mx-auto px-4 py-6">{children}</main>
-          <footer className="text-center text-xs text-slate-400 py-8">
+          <NavBar />
+          <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8">{children}</main>
+          <footer className="text-center text-xs text-muted py-10 border-t border-border mt-10">
             ITE2953 Programming Group Project — Local Tourist Day-Visit Planner
           </footer>
         </PlanProvider>

@@ -4,12 +4,11 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import type { Place } from "@/lib/types";
 
-// Fix default marker icons (Next.js/Webpack breaks Leaflet's default asset paths)
-const icon = L.icon({
-  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
+const goldIcon = L.divIcon({
+  className: "",
+  html: `<div style="width:18px;height:18px;border-radius:50%;background:#C6883C;border:3px solid #FFFFFF;box-shadow:0 0 0 2px #C6883C55;"></div>`,
+  iconSize: [18, 18],
+  iconAnchor: [9, 9],
 });
 
 interface MapViewProps {
@@ -26,11 +25,11 @@ export default function MapView({ places, height = "400px", center }: MapViewPro
     <div style={{ height }}>
       <MapContainer center={mapCenter} zoom={12} scrollWheelZoom={false}>
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='&copy; <a href="https://carto.com/attributions">CARTO</a> &copy; OpenStreetMap contributors'
+          url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
         />
         {places.map((place) => (
-          <Marker key={place.id} position={[place.latitude, place.longitude]} icon={icon}>
+          <Marker key={place.id} position={[place.latitude, place.longitude]} icon={goldIcon}>
             <Popup>
               <strong>{place.name}</strong>
               <br />

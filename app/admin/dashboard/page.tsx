@@ -19,6 +19,8 @@ const emptyForm = {
   longitude: "",
 };
 
+const inputCls = "w-full bg-bg border border-border rounded-lg px-3 py-2 text-sm text-ink placeholder:text-muted focus:outline-none focus:border-gold transition-colors";
+
 export default function AdminDashboard() {
   const router = useRouter();
   const supabase = createClient();
@@ -106,37 +108,37 @@ export default function AdminDashboard() {
     else loadPlaces();
   };
 
-  if (loading) return <p className="text-slate-400 text-sm">Loading...</p>;
+  if (loading) return <p className="text-muted text-sm">Loading...</p>;
 
   return (
-    <div>
+    <div className="animate-fade-in">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-slate-800">Admin Dashboard</h1>
-        <button onClick={handleLogout} className="text-sm text-red-500 font-medium">Log out</button>
+        <h1 className="font-display text-3xl text-ink">Admin Dashboard</h1>
+        <button onClick={handleLogout} className="text-sm text-terracotta font-medium hover:opacity-70">Log out</button>
       </div>
 
       <div className="grid lg:grid-cols-3 gap-6">
-        <form onSubmit={handleSubmit} className="lg:col-span-1 bg-white border border-slate-200 rounded-xl p-4 space-y-2 h-fit">
-          <h2 className="font-semibold text-slate-700 mb-1">{editing ? "Edit Place" : "Add New Place"}</h2>
-          <input required placeholder="Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm" />
-          <select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value as Category })} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm">
+        <form onSubmit={handleSubmit} className="lg:col-span-1 bg-surface border border-border rounded-xl p-4 space-y-2 h-fit">
+          <h2 className="font-display text-lg text-ink mb-1">{editing ? "Edit Place" : "Add New Place"}</h2>
+          <input required placeholder="Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className={inputCls} />
+          <select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value as Category })} className={inputCls}>
             {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
           </select>
-          <input required type="number" step="0.1" placeholder="Distance (km)" value={form.distance_km} onChange={(e) => setForm({ ...form, distance_km: e.target.value })} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm" />
-          <textarea required placeholder="Description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm" rows={2} />
-          <input required placeholder="Opening Hours" value={form.opening_hours} onChange={(e) => setForm({ ...form, opening_hours: e.target.value })} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm" />
-          <textarea required placeholder="Travel Tips" value={form.travel_tips} onChange={(e) => setForm({ ...form, travel_tips: e.target.value })} className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm" rows={2} />
+          <input required type="number" step="0.1" placeholder="Distance (km)" value={form.distance_km} onChange={(e) => setForm({ ...form, distance_km: e.target.value })} className={inputCls} />
+          <textarea required placeholder="Description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className={inputCls} rows={2} />
+          <input required placeholder="Opening Hours" value={form.opening_hours} onChange={(e) => setForm({ ...form, opening_hours: e.target.value })} className={inputCls} />
+          <textarea required placeholder="Travel Tips" value={form.travel_tips} onChange={(e) => setForm({ ...form, travel_tips: e.target.value })} className={inputCls} rows={2} />
           <div className="flex gap-2">
-            <input required type="number" step="0.0001" placeholder="Latitude" value={form.latitude} onChange={(e) => setForm({ ...form, latitude: e.target.value })} className="w-1/2 border border-slate-200 rounded-lg px-3 py-2 text-sm" />
-            <input required type="number" step="0.0001" placeholder="Longitude" value={form.longitude} onChange={(e) => setForm({ ...form, longitude: e.target.value })} className="w-1/2 border border-slate-200 rounded-lg px-3 py-2 text-sm" />
+            <input required type="number" step="0.0001" placeholder="Latitude" value={form.latitude} onChange={(e) => setForm({ ...form, latitude: e.target.value })} className={`w-1/2 ${inputCls}`} />
+            <input required type="number" step="0.0001" placeholder="Longitude" value={form.longitude} onChange={(e) => setForm({ ...form, longitude: e.target.value })} className={`w-1/2 ${inputCls}`} />
           </div>
-          {message && <p className="text-xs text-emerald-700">{message}</p>}
+          {message && <p className="text-xs text-jade-light">{message}</p>}
           <div className="flex gap-2 pt-1">
-            <button type="submit" className="flex-1 bg-emerald-600 text-white rounded-lg py-2 text-sm font-medium hover:bg-emerald-700">
+            <button type="submit" className="flex-1 bg-gold text-bg rounded-lg py-2 text-sm font-medium hover:bg-gold-hover transition-colors">
               {editing ? "Update" : "Add Place"}
             </button>
             {editing && (
-              <button type="button" onClick={resetForm} className="px-3 rounded-lg border border-slate-200 text-sm">
+              <button type="button" onClick={resetForm} className="px-3 rounded-lg border border-border text-sm text-muted hover:text-ink">
                 Cancel
               </button>
             )}
@@ -144,15 +146,15 @@ export default function AdminDashboard() {
         </form>
 
         <div className="lg:col-span-2 space-y-3">
-          {places.map((p) => (
-            <div key={p.id} className="bg-white border border-slate-200 rounded-xl p-4 flex items-center justify-between gap-3">
+          {places.map((p, i) => (
+            <div key={p.id} className="bg-surface border border-border rounded-xl p-4 flex items-center justify-between gap-3 animate-fade-up" style={{ animationDelay: `${Math.min(i, 8) * 40}ms` }}>
               <div className="min-w-0">
-                <p className="font-medium text-slate-800 truncate">{p.name}</p>
-                <p className="text-xs text-slate-400">{p.category} · {p.distance_km} km · {p.opening_hours}</p>
+                <p className="font-medium text-ink truncate">{p.name}</p>
+                <p className="text-xs text-muted font-mono">{p.category} · {p.distance_km} km · {p.opening_hours}</p>
               </div>
-              <div className="flex gap-2 flex-shrink-0">
-                <button onClick={() => startEdit(p)} className="text-xs font-medium text-emerald-700">Edit</button>
-                <button onClick={() => handleDelete(p.id)} className="text-xs font-medium text-red-500">Delete</button>
+              <div className="flex gap-3 flex-shrink-0">
+                <button onClick={() => startEdit(p)} className="text-xs font-medium text-gold hover:text-gold-hover">Edit</button>
+                <button onClick={() => handleDelete(p.id)} className="text-xs font-medium text-terracotta hover:opacity-70">Delete</button>
               </div>
             </div>
           ))}

@@ -6,6 +6,7 @@ import type { Place } from "@/lib/types";
 import PlaceCard from "@/components/PlaceCard";
 import CategoryFilter from "@/components/CategoryFilter";
 import MapViewLoader from "@/components/MapViewLoader";
+import HeroBanner from "@/components/HeroBanner";
 
 export default function HomePage() {
   const [places, setPlaces] = useState<Place[]>([]);
@@ -28,28 +29,30 @@ export default function HomePage() {
 
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-slate-800">Explore places near Nugawela, Kandy</h1>
-        <p className="text-slate-500 text-sm mt-1">Browse places of interest within a 25 km radius and build your one-day visit plan.</p>
-      </div>
+      <HeroBanner>
+        <p className="font-mono text-xs text-jade-light tracking-widest uppercase mb-2">25 km radius · Nugawela, Kandy</p>
+        <h1 className="font-display text-3xl sm:text-4xl text-white mb-2">Explore places, build your day</h1>
+        <p className="text-white/70 text-sm mb-6 max-w-xl">
+          Browse temples, waterfalls and viewpoints near Nugawela, then string together a one-day trail.
+        </p>
+        <CategoryFilter active={category} onChange={setCategory} />
+      </HeroBanner>
 
-      <CategoryFilter active={category} onChange={setCategory} />
-
-      <div className="h-72 mb-8 rounded-xl overflow-hidden border border-slate-200">
+      <div className="h-64 sm:h-80 mb-8 rounded-xl overflow-hidden border border-border animate-fade-in">
         <MapViewLoader places={filtered} height="100%" />
       </div>
 
-      {loading && <p className="text-slate-400 text-sm">Loading places...</p>}
-      {error && <p className="text-red-500 text-sm">Error: {error}</p>}
+      {loading && <p className="text-muted text-sm">Loading places...</p>}
+      {error && <p className="text-terracotta text-sm">Error: {error}</p>}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filtered.map((place) => (
-          <PlaceCard key={place.id} place={place} />
+        {filtered.map((place, i) => (
+          <PlaceCard key={place.id} place={place} index={i} />
         ))}
       </div>
 
-      {!loading && filtered.length === 0 && (
-        <p className="text-slate-400 text-sm text-center py-12">No places found in this category.</p>
+      {!loading && filtered.length === 0 && !error && (
+        <p className="text-muted text-sm text-center py-12">No places found in this category.</p>
       )}
     </div>
   );
