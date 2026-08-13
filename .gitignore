@@ -1,0 +1,16 @@
+# Dependencies
+/node_modules
+
+# Next.js build output
+/.next/
+/out/
+
+# Local environment variables (SECURITY)
+.env*.local
+.env
+
+# Vercel
+.vercel
+
+# Logs
+*.log
