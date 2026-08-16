@@ -26,4 +26,4 @@ export default function MapView({ places, height = "400px", center }: MapViewPro
       </MapContainer>
     </div>
   );
-} 
+}

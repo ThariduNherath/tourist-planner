@@ -6,15 +6,15 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        bg: "#EEF2EA",
-        surface: "#FFFFFF",
-        surface2: "#F7F9F4",
-        border: "#DCE3D6",
-        gold: { DEFAULT: "#C6883C", hover: "#D89A4E" },
+        bg: "#12211C",
+        surface: "#1B2F28",
+        surface2: "#203A30",
+        border: "#2F493C",
+        gold: { DEFAULT: "#E3AF62", hover: "#EDC385" },
         jade: { DEFAULT: "#2E7350", light: "#4C9271" },
-        terracotta: "#A9714A",
-        ink: "#1E2A22",
-        muted: "#66756A",
+        terracotta: "#C98B5E",
+        ink: "#F5F1E6",
+        muted: "#8FA396",
       },
       fontFamily: {
         display: ["var(--font-display)", "serif"],
