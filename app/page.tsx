@@ -18,8 +18,7 @@ export default function HomePage() {
     const load = async () => {
       const supabase = createClient();
       const { data, error } = await supabase.from("places").select("*").order("distance_km");
-      if (error) setError(error.message);
-      else setPlaces(data as Place[]);
+      if (error) setError(error.message); else setPlaces(data as Place[]);
       setLoading(false);
     };
     load();
@@ -31,12 +30,11 @@ export default function HomePage() {
     <div>
       <HeroBanner>
         <p className="font-mono text-xs text-jade-light tracking-widest uppercase mb-2">25 km radius · Nugawela, Kandy</p>
-        <h1 className="font-display text-3xl sm:text-4xl text-white mb-2">Explore places, build your day</h1>
-        <p className="text-white/70 text-sm mb-6 max-w-xl">
-          Browse temples, waterfalls and viewpoints near Nugawela, then string together a one-day trail.
-        </p>
-        <CategoryFilter active={category} onChange={setCategory} />
+        <h1 className="font-display text-4xl sm:text-5xl text-white mb-3 drop-shadow-lg">Explore places, build your day</h1>
+        <p className="text-white/80 text-sm sm:text-base max-w-lg drop-shadow">Browse temples, waterfalls and viewpoints near Nugawela, then string together a one-day trail.</p>
       </HeroBanner>
+
+      <CategoryFilter active={category} onChange={setCategory} />
 
       <div className="h-64 sm:h-80 mb-8 rounded-xl overflow-hidden border border-border animate-fade-in">
         <MapViewLoader places={filtered} height="100%" />
@@ -46,14 +44,10 @@ export default function HomePage() {
       {error && <p className="text-terracotta text-sm">Error: {error}</p>}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filtered.map((place, i) => (
-          <PlaceCard key={place.id} place={place} index={i} />
-        ))}
+        {filtered.map((place, i) => <PlaceCard key={place.id} place={place} index={i} />)}
       </div>
 
-      {!loading && filtered.length === 0 && !error && (
-        <p className="text-muted text-sm text-center py-12">No places found in this category.</p>
-      )}
+      {!loading && filtered.length === 0 && !error && <p className="text-muted text-sm text-center py-12">No places found in this category.</p>}
     </div>
   );
 }

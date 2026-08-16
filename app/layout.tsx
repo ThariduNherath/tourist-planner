@@ -4,6 +4,7 @@ import "leaflet/dist/leaflet.css";
 import "./globals.css";
 import { PlanProvider } from "@/components/PlanContext";
 import NavBar from "@/components/NavBar";
+import AmbientBackground from "@/components/AmbientBackground";
 
 const display = Fraunces({ subsets: ["latin"], variable: "--font-display", weight: ["500", "600"] });
 const body = Manrope({ subsets: ["latin"], variable: "--font-body" });
@@ -17,7 +18,8 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${display.variable} ${body.variable} ${mono.variable}`}>
-      <body className="bg-bg text-ink min-h-screen">
+      <body className="text-ink min-h-screen">
+        <AmbientBackground />
         <PlanProvider>
           <NavBar />
           <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8">{children}</main>
