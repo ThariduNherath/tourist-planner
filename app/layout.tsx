@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${display.variable} ${body.variable} ${mono.variable}`}>
-      <body className="bg-bg text-ink min-h-screen">
+      <body className="text-ink min-h-screen">
         <PlanProvider>
           <NavBar />
           <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8">{children}</main>

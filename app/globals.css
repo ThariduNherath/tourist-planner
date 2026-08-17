@@ -2,24 +2,60 @@
 @tailwind components;
 @tailwind utilities;
 
-html, body { background-color: #12211C; color: #F5F1E6; }
-body { font-family: var(--font-body); }
-
-.leaflet-container { width: 100%; height: 100%; border-radius: 0.9rem; }
-.leaflet-popup-content-wrapper, .leaflet-popup-tip { background: #1B2F28; color: #F5F1E6; border: 1px solid #2F493C; }
-.leaflet-control-zoom a { background: #1B2F28 !important; color: #F5F1E6 !important; border-color: #2F493C !important; }
-
-.trail-line {
-  position: absolute; left: 13px; top: 32px; bottom: -12px; width: 2px;
-  background-image: linear-gradient(#E3AF62 40%, transparent 0%);
-  background-size: 2px 8px; background-repeat: repeat-y;
+/* Main Background Gradient (Updated) */
+html, body { 
+  background-color: #0B1512;
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(46, 115, 80, 0.22) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(227, 175, 98, 0.18) 0px, transparent 50%),
+    radial-gradient(at 50% 100%, rgba(18, 33, 28, 0.9) 0px, transparent 70%);
+  background-attachment: fixed;
+  color: #F5F1E6; 
+  font-family: var(--font-body); 
+  min-height: 100vh;
 }
 
-.hero-scene { position: absolute; inset: 0; opacity: 0; animation: heroFade 20s infinite both; }
+/* Leaflet Map Styles (Original) */
+.leaflet-container { 
+  width: 100%; 
+  height: 100%; 
+  border-radius: 0.9rem; 
+}
+.leaflet-popup-content-wrapper, .leaflet-popup-tip { 
+  background: #1B2F28; 
+  color: #F5F1E6; 
+  border: 1px solid #2F493C; 
+}
+.leaflet-control-zoom a { 
+  background: #1B2F28 !important; 
+  color: #F5F1E6 !important; 
+  border-color: #2F493C !important; 
+}
+
+/* Trail Line (Original) */
+.trail-line {
+  position: absolute; 
+  left: 13px; 
+  top: 32px; 
+  bottom: -12px; 
+  width: 2px;
+  background-image: linear-gradient(#E3AF62 40%, transparent 0%);
+  background-size: 2px 8px; 
+  background-repeat: repeat-y;
+}
+
+/* Hero Scene Transition Animations (Original) */
+.hero-scene { 
+  position: absolute; 
+  inset: 0; 
+  opacity: 0; 
+  animation: heroFade 20s infinite both; 
+}
 .hero-scene:nth-child(1) { animation-delay: 0s; }
 .hero-scene:nth-child(2) { animation-delay: 5s; }
 .hero-scene:nth-child(3) { animation-delay: 10s; }
 .hero-scene:nth-child(4) { animation-delay: 15s; }
+
 @keyframes heroFade {
   0% { opacity: 0; transform: scale(1.04); }
   4% { opacity: 1; transform: scale(1); }
@@ -28,22 +64,47 @@ body { font-family: var(--font-body); }
   100% { opacity: 0; }
 }
 
-::-webkit-scrollbar { width: 8px; height: 8px; }
-::-webkit-scrollbar-track { background: #12211C; }
-::-webkit-scrollbar-thumb { background: #2F493C; border-radius: 4px; }
-
-@media (prefers-reduced-motion: reduce) {
-  * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
-  .hero-scene { animation: none !important; opacity: 1 !important; }
+/* Custom Scrollbars (Original) */
+::-webkit-scrollbar { 
+  width: 8px; 
+  height: 8px; 
+}
+::-webkit-scrollbar-track { 
+  background: #0B1512; 
+}
+::-webkit-scrollbar-thumb { 
+  background: #2F493C; 
+  border-radius: 4px; 
 }
 
-.ambient-blob { position: absolute; border-radius: 9999px; filter: blur(90px); opacity: 0.3; animation: blobDrift 24s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  * { 
+    animation-duration: 0.01ms !important; 
+    animation-iteration-count: 1 !important; 
+    transition-duration: 0.01ms !important; 
+  }
+  .hero-scene { 
+    animation: none !important; 
+    opacity: 1 !important; 
+  }
+}
+
+/* Ambient Blobs (Original) */
+.ambient-blob { 
+  position: absolute; 
+  border-radius: 9999px; 
+  filter: blur(90px); 
+  opacity: 0.3; 
+  animation: blobDrift 24s ease-in-out infinite; 
+}
+
 @keyframes blobDrift {
   0% { transform: translate(0,0) scale(1); }
   33% { transform: translate(40px,-30px) scale(1.1); }
   66% { transform: translate(-30px,20px) scale(0.95); }
   100% { transform: translate(0,0) scale(1); }
 }
+
 @media (prefers-reduced-motion: reduce) {
   .ambient-blob { animation: none !important; }
-}
+} 
