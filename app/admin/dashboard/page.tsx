@@ -29,6 +29,8 @@ export default function AdminDashboard() {
   const [form, setForm] = useState(emptyForm);
   const [editing, setEditing] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [confirmTarget, setConfirmTarget] = useState<Place | null>(null);
+  const [confirmLogout, setConfirmLogout] = useState(false);
 
   const loadPlaces = async () => {
     const { data } = await supabase.from("places").select("*").order("name");
@@ -49,7 +51,7 @@ export default function AdminDashboard() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleLogout = async () => {
+  const confirmLogoutAction = async () => {
     await supabase.auth.signOut();
     router.push("/admin/login");
   };
@@ -101,11 +103,12 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Delete this place?")) return;
-    const { error } = await supabase.from("places").delete().eq("id", id);
+  const confirmDelete = async () => {
+    if (!confirmTarget) return;
+    const { error } = await supabase.from("places").delete().eq("id", confirmTarget.id);
     if (error) setMessage(`Error: ${error.message}`);
     else loadPlaces();
+    setConfirmTarget(null);
   };
 
   if (loading) return <p className="text-muted text-sm">Loading...</p>;
@@ -114,7 +117,7 @@ export default function AdminDashboard() {
     <div className="animate-fade-in">
       <div className="flex items-center justify-between mb-6">
         <h1 className="font-display text-3xl text-ink">Admin Dashboard</h1>
-        <button onClick={handleLogout} className="text-sm text-terracotta font-medium hover:opacity-70">Log out</button>
+        <button onClick={() => setConfirmLogout(true)} className="text-sm text-terracotta font-medium hover:opacity-70">Log out</button>
       </div>
 
       <div className="grid lg:grid-cols-3 gap-6">
@@ -154,12 +157,58 @@ export default function AdminDashboard() {
               </div>
               <div className="flex gap-3 flex-shrink-0">
                 <button onClick={() => startEdit(p)} className="text-xs font-medium text-gold hover:text-gold-hover">Edit</button>
-                <button onClick={() => handleDelete(p.id)} className="text-xs font-medium text-terracotta hover:opacity-70">Delete</button>
+                <button onClick={() => setConfirmTarget(p)} className="text-xs font-medium text-terracotta hover:opacity-70">Delete</button>
               </div>
             </div>
           ))}
         </div>
       </div>
+
+      {confirmTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4 animate-fade-in">
+          <div className="bg-surface border border-border rounded-2xl shadow-2xl shadow-black/50 max-w-sm w-full p-6 text-center animate-fade-up">
+            <div className="w-14 h-14 mx-auto rounded-full bg-terracotta/15 border border-terracotta/40 flex items-center justify-center mb-4">
+              <svg viewBox="0 0 24 24" className="w-7 h-7 text-terracotta" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6h16Z" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+            <h3 className="font-display text-lg text-ink mb-1">Delete this place?</h3>
+            <p className="text-sm text-muted mb-6">
+              <span className="text-ink font-medium">{confirmTarget.name}</span> will be permanently removed. This can't be undone.
+            </p>
+            <div className="flex gap-3">
+              <button onClick={() => setConfirmTarget(null)} className="flex-1 rounded-lg border border-border text-sm text-muted py-2.5 hover:text-ink transition-colors">
+                Cancel
+              </button>
+              <button onClick={confirmDelete} className="flex-1 rounded-lg bg-terracotta text-white text-sm font-medium py-2.5 hover:opacity-90 transition-opacity">
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {confirmLogout && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4 animate-fade-in">
+          <div className="bg-surface border border-border rounded-2xl shadow-2xl shadow-black/50 max-w-sm w-full p-6 text-center animate-fade-up">
+            <div className="w-14 h-14 mx-auto rounded-full bg-gold/15 border border-gold/40 flex items-center justify-center mb-4">
+              <svg viewBox="0 0 24 24" className="w-7 h-7 text-gold" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+            <h3 className="font-display text-lg text-ink mb-1">Log out?</h3>
+            <p className="text-sm text-muted mb-6">You'll need to sign in again to manage places.</p>
+            <div className="flex gap-3">
+              <button onClick={() => setConfirmLogout(false)} className="flex-1 rounded-lg border border-border text-sm text-muted py-2.5 hover:text-ink transition-colors">
+                Cancel
+              </button>
+              <button onClick={confirmLogoutAction} className="flex-1 rounded-lg bg-gold text-bg text-sm font-medium py-2.5 hover:bg-gold-hover transition-colors">
+                Log out
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
