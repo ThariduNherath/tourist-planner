@@ -1,16 +1,33 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
+import { useToast } from "@/components/Toast";
 
 export default function AdminLoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [checking, setChecking] = useState(true);
   const router = useRouter();
+  const toast = useToast();
+
+  useEffect(() => {
+    const check = async () => {
+      const supabase = createClient();
+      const { data } = await supabase.auth.getSession();
+      if (data.session) {
+        router.replace("/admin/dashboard");
+        return;
+      }
+      setChecking(false);
+    };
+    check();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,9 +36,21 @@ export default function AdminLoginPage() {
     const supabase = createClient();
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
-    if (error) setError(error.message);
-    else router.push("/admin/dashboard");
+    if (error) {
+      setError(error.message);
+    } else {
+      toast("Login successful");
+      router.push("/admin/dashboard");
+    }
   };
+
+  if (checking) {
+    return (
+      <div className="max-w-sm mx-auto mt-6">
+        <p className="text-muted text-sm">Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-sm mx-auto mt-6">

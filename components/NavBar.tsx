@@ -6,7 +6,9 @@ import { usePathname } from "next/navigation";
 import { usePlan } from "@/components/PlanContext";
 
 const links = [
-  { href: "/", label: "Explore" },
+  { href: "/", label: "Home" },
+  { href: "/places", label: "Places" },
+  { href: "/map", label: "Map" },
   { href: "/plan", label: "My Plan" },
   { href: "/admin/login", label: "Admin" },
 ];
@@ -14,7 +16,7 @@ const links = [
 export default function NavBar() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
-  const { plan } = usePlan();
+  const { items } = usePlan();
 
   return (
     <header className="sticky top-0 z-50 bg-transparent backdrop-blur-md border-b border-white/10 relative">
@@ -48,9 +50,9 @@ export default function NavBar() {
               className={`relative py-1 transition-colors hover:text-ink ${pathname === l.href ? "text-ink" : ""}`}
             >
               {l.label}
-              {l.href === "/plan" && plan.length > 0 && (
+              {l.href === "/plan" && items.length > 0 && (
                 <span className="ml-1.5 inline-flex items-center justify-center w-4 h-4 text-[10px] rounded-full bg-gold text-bg font-bold">
-                  {plan.length}
+                  {items.length}
                 </span>
               )}
               <span
@@ -78,7 +80,7 @@ export default function NavBar() {
       </div>
 
       <div
-        className={`sm:hidden absolute top-full left-0 right-0 overflow-hidden transition-[max-height] duration-300 bg-surface shadow-xl shadow-black/30 ${open ? "max-h-40" : "max-h-0"}`}
+        className={`sm:hidden absolute top-full left-0 right-0 overflow-hidden transition-[max-height] duration-300 bg-surface shadow-xl shadow-black/30 ${open ? "max-h-72" : "max-h-0"}`}
       >
         <nav className="flex flex-col gap-1 px-4 pb-4 text-sm font-medium text-muted">
           {links.map((l) => (
@@ -89,7 +91,7 @@ export default function NavBar() {
               className="py-2 border-b border-border/60 hover:text-ink"
             >
               {l.label}{" "}
-              {l.href === "/plan" && plan.length > 0 ? `(${plan.length})` : ""}
+              {l.href === "/plan" && items.length > 0 ? `(${items.length})` : ""}
             </Link>
           ))}
         </nav>

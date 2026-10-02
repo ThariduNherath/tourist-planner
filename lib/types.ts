@@ -10,5 +10,9 @@ export interface Place {
   travel_tips: string;
   latitude: number;
   longitude: number;
+  image_url?: string | null;
+  opening_time?: string | null;
+  closing_time?: string | null;
+  facilities?: string[] | null;
   created_at?: string;
 }
