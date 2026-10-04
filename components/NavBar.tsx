@@ -19,7 +19,7 @@ export default function NavBar() {
   const { items } = usePlan();
 
   return (
-    <header className="sticky top-0 z-50 bg-transparent backdrop-blur-md border-b border-white/10 relative">
+    <header className="no-print sticky top-0 z-50 bg-transparent backdrop-blur-md border-b border-white/10 relative">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
         <Link
           href="/"

@@ -108,3 +108,123 @@ html, body {
 @media (prefers-reduced-motion: reduce) {
   .ambient-blob { animation: none !important; }
 } 
+
+/* ---- Screen: print-only elements hidden ---- */
+.print-only { display: none; }
+
+@media print {
+  /* hide app chrome */
+  .no-print { display: none !important; }
+  * { animation: none !important; transition: none !important; }
+
+  @page { margin: 16mm 14mm; }
+
+  html, body {
+    background: #fff !important;
+    color: #1a1a1a !important;
+    font-family: Georgia, "Times New Roman", serif !important;
+  }
+
+  .print-only { display: block !important; }
+
+  /* ---- Brochure header ---- */
+  .print-header {
+    text-align: center;
+    padding-bottom: 18px;
+    margin-bottom: 24px;
+    border-bottom: 2px solid #C9A95C;
+  }
+  .print-kicker {
+    font-family: "Courier New", monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: #8a7a4f;
+    margin-bottom: 8px;
+  }
+  .print-title {
+    font-family: Georgia, serif;
+    font-size: 32px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 4px;
+  }
+  .print-subtitle {
+    font-size: 13px;
+    color: #555;
+    font-style: italic;
+    margin-bottom: 12px;
+  }
+  .print-meta {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    font-size: 11px;
+    color: #777;
+    font-family: "Courier New", monospace;
+  }
+
+  /* ---- Layout: single column, no map/sidebar ---- */
+  .print-grid { display: block !important; }
+  .print-list { width: 100% !important; }
+
+  /* ---- Itinerary cards ---- */
+  .print-item { page-break-inside: avoid; }
+  .print-card {
+    background: #fdfbf6 !important;
+    border: 1px solid #ddd0a8 !important;
+    border-radius: 10px !important;
+    box-shadow: none !important;
+    padding: 16px !important;
+    margin-bottom: 4px !important;
+  }
+  .print-num {
+    background: #C9A95C !important;
+    color: #fff !important;
+    width: 28px !important;
+    height: 28px !important;
+  }
+  .print-time {
+    color: #9a7d2e !important;
+    font-weight: 700 !important;
+    font-size: 11px !important;
+  }
+  .print-name {
+    font-family: Georgia, serif !important;
+    font-size: 18px !important;
+    color: #1a1a1a !important;
+  }
+  .print-hours {
+    color: #666 !important;
+  }
+  .print-desc {
+    font-size: 12px;
+    color: #444;
+    margin-top: 6px;
+    line-height: 1.5;
+  }
+  .print-tips {
+    font-size: 11.5px;
+    color: #7a5c1e;
+    background: #f6edd4;
+    border-radius: 6px;
+    padding: 6px 10px;
+    margin-top: 8px;
+    display: inline-block;
+  }
+  .print-between {
+    text-align: center;
+    font-size: 10.5px;
+    color: #9a7d2e;
+    font-family: "Courier New", monospace;
+    margin: 10px 0;
+  }
+  .print-footer {
+    text-align: center;
+    font-size: 11px;
+    color: #999;
+    font-style: italic;
+    margin-top: 28px;
+    padding-top: 14px;
+    border-top: 1px solid #ddd0a8;
+  }
+}

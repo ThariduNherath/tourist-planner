@@ -37,6 +37,8 @@ export default function PlanPage() {
     navigator.clipboard?.writeText(txt).then(() => toast("Plan copied"));
   };
 
+  const downloadPDF = () => window.print();
+
   if (rows.length === 0)
     return (
       <div className="text-center py-16 bg-surface rounded-xl border border-border animate-fade-in">
@@ -46,10 +48,29 @@ export default function PlanPage() {
     );
 
   const inp = "bg-bg border border-border rounded-lg px-2 py-1 text-ink focus:outline-none focus:border-gold";
+  const today = new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
 
   return (
     <div className="animate-fade-in">
-      <div className="flex flex-wrap items-end justify-between gap-3 mb-6">
+      {/* ---- PRINT-ONLY BROCHURE HEADER (hidden on screen) ---- */}
+      <div className="print-only">
+        <div className="print-header">
+          <p className="print-kicker">25 KM RADIUS · NUGAWELA, KANDY</p>
+          <h1 className="print-title">Kandy Day Visit Planner</h1>
+          <p className="print-subtitle">Your personalised one-day itinerary</p>
+          <div className="print-meta">
+            <span>{rows.length} stop{rows.length !== 1 ? "s" : ""}</span>
+            <span>·</span>
+            <span>≈{totalKm.toFixed(1)} km total</span>
+            <span>·</span>
+            <span>{minToStr(toMin(start))} – {minToStr(rows[rows.length - 1].leave)}</span>
+            <span>·</span>
+            <span>Prepared {today}</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-wrap items-end justify-between gap-3 mb-6 no-print">
         <div>
           <h1 className="font-display text-3xl text-ink mb-1">My One-Day Trail</h1>
           <p className="text-muted text-sm font-mono">
@@ -58,46 +79,51 @@ export default function PlanPage() {
         </div>
         <div className="flex gap-4 text-sm">
           <button onClick={copy} className="text-gold hover:text-gold-hover">Copy plan</button>
+          <button onClick={downloadPDF} className="text-gold hover:text-gold-hover">Download PDF</button>
           <button onClick={clear} className="text-muted hover:text-terracotta">Clear</button>
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-4 bg-surface border border-border rounded-xl p-4 text-sm text-muted mb-6">
+      <div className="no-print flex flex-wrap gap-4 bg-surface border border-border rounded-xl p-4 text-sm text-muted mb-6">
         <label className="flex items-center gap-2">Start time
           <input type="time" value={start} onChange={(e) => setStart(e.target.value || "09:00")} className={inp} /></label>
         <label className="flex items-center gap-2">Travel buffer
           <input type="number" min={0} step={5} value={buffer} onChange={(e) => setBuffer(Math.max(0, Number(e.target.value)))} className={`${inp} w-20`} /> min</label>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-6">
-        <div>
+      <div className="grid md:grid-cols-2 gap-6 print-grid">
+        <div className="print-list">
           {rows.map((r, i) => (
-            <div key={r.id} className="relative">
-              {i < rows.length - 1 && <div className="trail-line" />}
-              {i > 0 && <p className="text-[11px] text-muted font-mono ml-10 mb-1">≈ {r.km.toFixed(1)} km from previous · {buffer} min buffer</p>}
-              <div className="relative bg-surface border border-border rounded-xl p-4 flex gap-3 mb-3 animate-fade-up" style={{ animationDelay: `${i * 60}ms` }}>
-                <span className="w-7 h-7 rounded-full bg-gold text-bg text-sm flex items-center justify-center font-bold flex-shrink-0 z-10">{i + 1}</span>
+            <div key={r.id} className="relative print-item">
+              {i < rows.length - 1 && <div className="trail-line no-print" />}
+              {i > 0 && <p className="text-[11px] text-muted font-mono ml-10 mb-1 no-print">≈ {r.km.toFixed(1)} km from previous · {buffer} min buffer</p>}
+              {i > 0 && <p className="print-only print-between">↓ ≈ {r.km.toFixed(1)} km · {buffer} min travel buffer</p>}
+              <div className="relative bg-surface border border-border rounded-xl p-4 flex gap-3 mb-3 animate-fade-up print-card" style={{ animationDelay: `${i * 60}ms` }}>
+                <span className="w-7 h-7 rounded-full bg-gold text-bg text-sm flex items-center justify-center font-bold flex-shrink-0 z-10 print-num">{i + 1}</span>
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs font-mono text-gold">{minToStr(r.arrive)} – {minToStr(r.leave)}</p>
-                  <Link href={`/places/${r.p.id}`} className="font-medium text-ink hover:text-gold block truncate">{r.p.name}</Link>
-                  <p className="text-xs text-muted font-mono mt-0.5">Open: {hoursText(r.p)}</p>
-                  <label className="mt-2 flex items-center gap-2 text-xs text-muted">Time here
+                  <p className="text-xs font-mono text-gold print-time">{minToStr(r.arrive)} – {minToStr(r.leave)}</p>
+                  <Link href={`/places/${r.p.id}`} className="font-medium text-ink hover:text-gold block truncate print-name">{r.p.name}</Link>
+                  <p className="text-xs text-muted font-mono mt-0.5 print-hours">Open: {hoursText(r.p)}</p>
+                  <p className="print-only print-desc">{r.p.description}</p>
+                  {r.p.travel_tips && <p className="print-only print-tips">💡 {r.p.travel_tips}</p>}
+                  <label className="no-print mt-2 flex items-center gap-2 text-xs text-muted">Time here
                     <select value={r.mins} onChange={(e) => setMins(r.id, Number(e.target.value))} className={inp}>
                       {[30, 45, 60, 90, 120, 180, 240].map((m) => <option key={m} value={m}>{m >= 60 ? `${m / 60} h` : `${m} min`}</option>)}
                     </select>
                   </label>
-                  {r.warn && <p className="mt-2 text-xs text-terracotta bg-terracotta/10 rounded-lg px-3 py-2">⚠ Visit falls outside opening hours. Adjust start time or order.</p>}
+                  {r.warn && <p className="mt-2 text-xs text-terracotta bg-terracotta/10 rounded-lg px-3 py-2 no-print">⚠ Visit falls outside opening hours. Adjust start time or order.</p>}
                 </div>
-                <div className="flex flex-col gap-1 text-muted">
+                <div className="no-print flex flex-col gap-1 text-muted">
                   <button onClick={() => move(i, -1)} disabled={i === 0} className="text-xs px-1.5 disabled:opacity-20 hover:text-gold">▲</button>
                   <button onClick={() => move(i, 1)} disabled={i === rows.length - 1} className="text-xs px-1.5 disabled:opacity-20 hover:text-gold">▼</button>
                 </div>
-                <button onClick={() => remove(r.id)} className="text-xs text-terracotta font-medium hover:opacity-70 self-start">Remove</button>
+                <button onClick={() => remove(r.id)} className="no-print text-xs text-terracotta font-medium hover:opacity-70 self-start">Remove</button>
               </div>
             </div>
           ))}
+          <p className="print-only print-footer">Generated by Kandy Day Visit Planner · Have a wonderful trip!</p>
         </div>
-        <div className="h-80 md:h-[480px] md:sticky md:top-24 rounded-xl overflow-hidden border border-border">
+        <div className="no-print h-80 md:h-[480px] md:sticky md:top-24 rounded-xl overflow-hidden border border-border">
           <MapViewLoader places={rows.map((r) => r.p)} height="100%" route />
         </div>
       </div>

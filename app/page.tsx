@@ -21,7 +21,7 @@ export default function HomePage() {
       <HeroBanner>
         <p className="font-mono text-xs text-jade-light tracking-widest uppercase mb-2">25 km radius · Nugawela, Kandy</p>
         <h1 className="font-display text-4xl sm:text-5xl text-white mb-3 drop-shadow-lg">Explore places, build your day</h1>
-        <p className="text-white/80 text-sm sm:text-base max-w-lg drop-shadow mb-5">Browse temples, waterfalls and viewpoints near Nugawela, then string together a one-day trail.</p>
+        <p className="text-white/80 text-sm sm:text-base max-w-lg drop-shadow mb-5">Browse temples, waterfalls and viewpoints near Nugawela, then string together a one day trail.</p>
         <div className="flex gap-3">
           <Link href="/places" className="bg-gold text-bg font-medium text-sm rounded-full px-6 py-2.5 hover:bg-gold-hover transition-colors">Explore places</Link>
           <Link href="/map" className="border border-white/30 bg-white/10 backdrop-blur text-white text-sm rounded-full px-6 py-2.5 hover:bg-white/20 transition-colors">Open map</Link>
