@@ -8,6 +8,9 @@ import {
   toMin,
   minToStr,
   haversine,
+  travelMin,
+  autoSpeed,
+
 } from "@/lib/utils";
 import type { Place } from "@/lib/types";
 
@@ -124,5 +127,38 @@ describe("haversine", () => {
     const ab = haversine(mockPlaces[0], mockPlaces[1]);
     const ba = haversine(mockPlaces[1], mockPlaces[0]);
     expect(ab).toBeCloseTo(ba, 5);
+  });
+});
+
+describe("travelMin", () => {
+  it("returns 0 for zero distance", () => {
+    expect(travelMin(0)).toBe(0);
+  });
+  it("has a 5 min minimum", () => {
+    expect(travelMin(1)).toBe(5);
+  });
+  it("estimates 5 km at 30 km/h as 15 min", () => {
+    expect(travelMin(5)).toBe(15);
+  });
+  it("is shorter at higher speed", () => {
+    expect(travelMin(10, 60)).toBeLessThan(travelMin(10, 30));
+  });
+});
+describe("autoSpeed", () => {
+  it("starts at 20 km/h for a zero-length leg", () => {
+    expect(autoSpeed(0)).toBe(20);
+  });
+
+  it("increases with leg distance", () => {
+    expect(autoSpeed(5)).toBe(30);
+  });
+
+  it("is capped at 40 km/h", () => {
+    expect(autoSpeed(10)).toBe(40);
+    expect(autoSpeed(50)).toBe(40);
+  });
+
+  it("gives a shorter travel time for longer legs than a fixed slow speed", () => {
+    expect(travelMin(20, autoSpeed(20))).toBeLessThan(travelMin(20, 20));
   });
 });

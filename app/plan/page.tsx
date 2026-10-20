@@ -6,14 +6,16 @@ import { usePlaces } from "@/components/DataContext";
 import { usePlan } from "@/components/PlanContext";
 import { useToast } from "@/components/Toast";
 import MapViewLoader from "@/components/MapViewLoader";
-import { haversine, hoursText, minToStr, toMin } from "@/lib/utils";
+import { haversine, hoursText, minToStr, toMin, travelMin, autoSpeed } from "@/lib/utils";
 
+const DISCLAIMER =
+  "Travel times are rough estimates (straight-line distance × 1.4, with an average speed that adjusts to each leg unless you override it). Please verify opening hours before visiting.";
 export default function PlanPage() {
   const { places, loading } = usePlaces();
   const { items, move, remove, setMins, clear } = usePlan();
   const toast = useToast();
   const [start, setStart] = useState("09:00");
-  const [buffer, setBuffer] = useState(20);
+  const [speed, setSpeed] = useState(0);
 
   if (loading) return <p className="text-muted text-sm">Loading...</p>;
 
@@ -23,14 +25,16 @@ export default function PlanPage() {
   });
   let t = toMin(start);
   const rows = stops.map((s, i) => {
-    const arrive = t, leave = arrive + s.mins;
     const km = i ? haversine(stops[i - 1].p, s.p) : 0;
-    t = leave + buffer;
+    const travel = i ? travelMin(km, speed || autoSpeed(km)) : 0;
+    const arrive = t + travel, leave = arrive + s.mins;
+    t = leave;
     const { opening_time: o, closing_time: c } = s.p;
     const warn = !!(o && c && (arrive < toMin(o) || leave > toMin(c)));
-    return { ...s, arrive, leave, km, warn };
+    return { ...s, arrive, leave, km, travel, warn };
   });
   const totalKm = rows.reduce((a, r) => a + r.km, 0);
+  const totalTravel = rows.reduce((a, r) => a + r.travel, 0);
 
   const copy = () => {
     const txt = "My day plan\n" + rows.map((r, i) => `${i + 1}. ${minToStr(r.arrive)} – ${minToStr(r.leave)}  ${r.p.name}`).join("\n");
@@ -52,7 +56,6 @@ export default function PlanPage() {
 
   return (
     <div className="animate-fade-in">
-      {/* ---- PRINT-ONLY BROCHURE HEADER (hidden on screen) ---- */}
       <div className="print-only">
         <div className="print-header">
           <p className="print-kicker">25 KM RADIUS · NUGAWELA, KANDY</p>
@@ -74,7 +77,7 @@ export default function PlanPage() {
         <div>
           <h1 className="font-display text-3xl text-ink mb-1">My One-Day Trail</h1>
           <p className="text-muted text-sm font-mono">
-            {rows.length} stop{rows.length !== 1 ? "s" : ""} · ≈{totalKm.toFixed(1)} km straight-line · ends ~{minToStr(rows[rows.length - 1].leave)}
+            {rows.length} stop{rows.length !== 1 ? "s" : ""} · ≈{totalKm.toFixed(1)} km · ≈{totalTravel} min travel · ends ~{minToStr(rows[rows.length - 1].leave)}
           </p>
         </div>
         <div className="flex gap-4 text-sm">
@@ -84,26 +87,29 @@ export default function PlanPage() {
         </div>
       </div>
 
-      <div className="no-print flex flex-wrap gap-4 bg-surface border border-border rounded-xl p-4 text-sm text-muted mb-6">
+      <div className="no-print flex flex-wrap gap-4 bg-surface border border-border rounded-xl p-4 text-sm text-muted mb-2">
         <label className="flex items-center gap-2">Start time
           <input type="time" value={start} onChange={(e) => setStart(e.target.value || "09:00")} className={inp} /></label>
-        <label className="flex items-center gap-2">Travel buffer
-          <input type="number" min={0} step={5} value={buffer} onChange={(e) => setBuffer(Math.max(0, Number(e.target.value)))} className={`${inp} w-20`} /> min</label>
+        <label className="flex items-center gap-2">Speed override
+  <input type="number" min={10} max={80} step={5} placeholder="Auto" value={speed || ""} onChange={(e) => setSpeed(Math.max(0, Number(e.target.value) || 0))} className={`${inp} w-20`} /> km/h</label>
       </div>
+      <p className="no-print text-xs text-muted mb-6">ⓘ {DISCLAIMER}</p>
 
       <div className="grid md:grid-cols-2 gap-6 print-grid">
         <div className="print-list">
           {rows.map((r, i) => (
             <div key={r.id} className="relative print-item">
               {i < rows.length - 1 && <div className="trail-line no-print" />}
-              {i > 0 && <p className="text-[11px] text-muted font-mono ml-10 mb-1 no-print">≈ {r.km.toFixed(1)} km from previous · {buffer} min buffer</p>}
-              {i > 0 && <p className="print-only print-between">↓ ≈ {r.km.toFixed(1)} km · {buffer} min travel buffer</p>}
+              {i > 0 && <p className="text-[11px] text-muted font-mono ml-10 mb-1 no-print">≈ {r.km.toFixed(1)} km · ≈ {r.travel} min travel</p>}
+              {i > 0 && <p className="print-only print-between">↓ ≈ {r.km.toFixed(1)} km · ≈ {r.travel} min travel</p>}
               <div className="relative bg-surface border border-border rounded-xl p-4 flex gap-3 mb-3 animate-fade-up print-card" style={{ animationDelay: `${i * 60}ms` }}>
                 <span className="w-7 h-7 rounded-full bg-gold text-bg text-sm flex items-center justify-center font-bold flex-shrink-0 z-10 print-num">{i + 1}</span>
                 <div className="flex-1 min-w-0">
                   <p className="text-xs font-mono text-gold print-time">{minToStr(r.arrive)} – {minToStr(r.leave)}</p>
                   <Link href={`/places/${r.p.id}`} className="font-medium text-ink hover:text-gold block truncate print-name">{r.p.name}</Link>
                   <p className="text-xs text-muted font-mono mt-0.5 print-hours">Open: {hoursText(r.p)}</p>
+                  {r.p.entry_fee && <p className="text-xs text-muted font-mono mt-0.5 print-hours">Entry: {r.p.entry_fee}</p>}
+                  {r.p.best_time && <p className="text-xs text-muted font-mono mt-0.5 print-hours">Best time: {r.p.best_time}</p>}
                   <p className="print-only print-desc">{r.p.description}</p>
                   {r.p.travel_tips && <p className="print-only print-tips">💡 {r.p.travel_tips}</p>}
                   <label className="no-print mt-2 flex items-center gap-2 text-xs text-muted">Time here
@@ -121,6 +127,7 @@ export default function PlanPage() {
               </div>
             </div>
           ))}
+          <p className="print-only print-disclaimer">{DISCLAIMER}</p>
           <p className="print-only print-footer">Generated by Kandy Day Visit Planner · Have a wonderful trip!</p>
         </div>
         <div className="no-print h-80 md:h-[480px] md:sticky md:top-24 rounded-xl overflow-hidden border border-border">

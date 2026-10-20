@@ -229,3 +229,12 @@ html, body {
     border-top: 1px solid #ddd0a8;
   }
 }
+
+
+  .print-disclaimer {
+    text-align: center;
+    font-size: 10.5px;
+    color: #777;
+    font-style: italic;
+    margin-top: 22px;
+  }

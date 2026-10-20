@@ -26,6 +26,7 @@ const CAT_BAR: Record<string, string> = {
 const emptyForm = {
   id: "", name: "", category: "Nature" as Category, distance_km: "", description: "",
   opening_time: "", closing_time: "", opening_hours: "", facilities: "", travel_tips: "",
+  entry_fee: "", best_time: "",
   image_url: "", latitude: "", longitude: "",
 };
 const inputCls = "w-full bg-bg border border-border rounded-lg px-3 py-2 text-sm text-ink placeholder:text-muted focus:outline-none focus:border-gold transition-colors";
@@ -103,7 +104,6 @@ export default function AdminDashboard() {
 
   const closeForm = () => { setFormOpen(false); setForm(emptyForm); setEditing(false); };
 
-  // lock page scroll + Esc to close while the form modal is open
   useEffect(() => {
     if (!formOpen) return;
     const prev = document.body.style.overflow;
@@ -141,6 +141,7 @@ export default function AdminDashboard() {
       id: p.id, name: p.name, category: p.category, distance_km: String(p.distance_km), description: p.description,
       opening_time: p.opening_time?.slice(0, 5) ?? "", closing_time: p.closing_time?.slice(0, 5) ?? "",
       opening_hours: p.opening_hours, facilities: (p.facilities ?? []).join(", "), travel_tips: p.travel_tips,
+      entry_fee: p.entry_fee ?? "", best_time: p.best_time ?? "",
       image_url: p.image_url ?? "", latitude: String(p.latitude), longitude: String(p.longitude),
     });
     setEditing(true);
@@ -162,7 +163,10 @@ export default function AdminDashboard() {
       description: form.description.trim(), opening_hours: hours,
       opening_time: o || null, closing_time: c || null,
       facilities: form.facilities.split(",").map((s) => s.trim()).filter(Boolean),
-      travel_tips: form.travel_tips.trim(), image_url: form.image_url.trim() || null,
+      travel_tips: form.travel_tips.trim(),
+      entry_fee: form.entry_fee.trim() || null,
+      best_time: form.best_time.trim() || null,
+      image_url: form.image_url.trim() || null,
       latitude: lat, longitude: lng,
     };
     setBusy(true);
@@ -202,7 +206,6 @@ export default function AdminDashboard() {
 
   return (
     <div className="animate-fade-in">
-      {/* ---------- Header ---------- */}
       <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
         <div>
           <h1 className="font-display text-3xl text-ink">Admin Dashboard</h1>
@@ -218,7 +221,6 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* ---------- Stat cards ---------- */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
         <StatCard label="Total places" value={places.length} hint={places.length < 10 ? "Minimum 10 required" : "Requirement met ✓"} accent="text-gold" />
         <StatCard label="Categories in use" value={`${stats.usedCats} / ${CATEGORIES.length}`} hint="Categories with places" />
@@ -230,7 +232,6 @@ export default function AdminDashboard() {
         />
       </div>
 
-      {/* ---------- Category breakdown ---------- */}
       <div className="bg-surface border border-border rounded-xl p-4 mb-8">
         <h2 className="font-display text-lg text-ink mb-3">Places by category</h2>
         <div className="space-y-2.5">
@@ -246,7 +247,6 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* ---------- Table toolbar ---------- */}
       <div className="flex flex-wrap items-center gap-3 mb-3">
         <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search places…" className={`${inputCls} !w-56 !rounded-full`} />
         <select value={catFilter} onChange={(e) => setCatFilter(e.target.value)} className={`${inputCls} !w-auto !rounded-full`}>
@@ -259,7 +259,6 @@ export default function AdminDashboard() {
         </button>
       </div>
 
-      {/* ---------- Places table (fixed height, scrollable) ---------- */}
       <div className="bg-surface border border-border rounded-xl overflow-hidden">
         <div className="max-h-[560px] overflow-y-auto overflow-x-auto">
           <table className="w-full text-sm text-left">
@@ -269,6 +268,7 @@ export default function AdminDashboard() {
                 <th className="px-3 py-3 font-medium">Category</th>
                 <th className="px-3 py-3 font-medium whitespace-nowrap">Distance</th>
                 <th className="px-3 py-3 font-medium">Hours</th>
+                <th className="px-3 py-3 font-medium">Entry fee</th>
                 <th className="px-4 py-3 font-medium text-right">Actions</th>
               </tr>
             </thead>
@@ -292,6 +292,7 @@ export default function AdminDashboard() {
                   </td>
                   <td className="px-3 py-3 font-mono text-gold whitespace-nowrap">{p.distance_km} km</td>
                   <td className="px-3 py-3 font-mono text-xs text-muted whitespace-nowrap">{hoursText(p)}</td>
+                  <td className="px-3 py-3 font-mono text-xs text-muted">{p.entry_fee || "—"}</td>
                   <td className="px-4 py-3 text-right whitespace-nowrap">
                     <button onClick={() => startEdit(p)} className="text-xs font-medium text-gold hover:text-gold-hover mr-4">Edit</button>
                     <button onClick={() => setConfirmTarget(p)} className="text-xs font-medium text-terracotta hover:opacity-70">Delete</button>
@@ -304,17 +305,15 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* ---------- Add / Edit modal ---------- */}
       {formOpen && (
         <div
-  className="fixed inset-0 z-[1500] flex items-center justify-center bg-black/60 backdrop-blur-sm px-3 sm:px-6 pt-24 pb-6 animate-fade-in"
-  onMouseDown={(e) => { if (e.target === e.currentTarget) closeForm(); }}
->
-  <form
-    onSubmit={handleSubmit}
-    className="bg-surface border border-border rounded-2xl shadow-2xl shadow-black/50 w-full max-w-4xl max-h-[calc(100vh-7.5rem)] flex flex-col animate-fade-up"
-  > 
-            {/* header */}
+          className="fixed inset-0 z-[1500] flex items-center justify-center bg-black/60 backdrop-blur-sm px-3 sm:px-6 pt-24 pb-6 animate-fade-in"
+          onMouseDown={(e) => { if (e.target === e.currentTarget) closeForm(); }}
+        >
+          <form
+            onSubmit={handleSubmit}
+            className="bg-surface border border-border rounded-2xl shadow-2xl shadow-black/50 w-full max-w-4xl max-h-[calc(100vh-7.5rem)] flex flex-col animate-fade-up"
+          >
             <div className="flex items-center justify-between px-5 py-4 border-b border-border">
               <div>
                 <h2 className="font-display text-xl text-ink">{editing ? "Edit place" : "Add new place"}</h2>
@@ -323,9 +322,7 @@ export default function AdminDashboard() {
               <button type="button" onClick={closeForm} aria-label="Close" className="text-muted hover:text-ink text-2xl leading-none px-2">×</button>
             </div>
 
-            {/* scrollable body */}
             <div className="flex-1 overflow-y-auto px-5 py-5 grid md:grid-cols-2 gap-x-8 gap-y-6">
-              {/* LEFT column */}
               <div className="space-y-6">
                 <section>
                   <SectionTitle n={1}>Basic info</SectionTitle>
@@ -374,15 +371,24 @@ export default function AdminDashboard() {
                       <label className={labelCls}>Facilities (comma separated)</label>
                       <input placeholder="Parking, Restrooms, Food court" value={form.facilities} onChange={set("facilities")} className={inputCls} />
                     </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className={labelCls}>Entry fee (optional)</label>
+                        <input placeholder="Free / Rs. 1,000 (foreign)" value={form.entry_fee} onChange={set("entry_fee")} className={inputCls} />
+                      </div>
+                      <div>
+                        <label className={labelCls}>Best time to visit (optional)</label>
+                        <input placeholder="Early morning, 6–9 AM" value={form.best_time} onChange={set("best_time")} className={inputCls} />
+                      </div>
+                    </div>
                     <div>
                       <label className={labelCls}>Travel tips *</label>
-                      <textarea required placeholder="Best time to visit, dress code, etc." value={form.travel_tips} onChange={set("travel_tips")} className={inputCls} rows={2} />
+                      <textarea required placeholder="Dress code, parking, etc." value={form.travel_tips} onChange={set("travel_tips")} className={inputCls} rows={2} />
                     </div>
                   </div>
                 </section>
               </div>
 
-              {/* RIGHT column */}
               <div className="space-y-6">
                 <section>
                   <SectionTitle n={3}>Image</SectionTitle>
@@ -420,7 +426,6 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            {/* sticky footer */}
             <div className="flex items-center justify-end gap-3 px-5 py-4 border-t border-border">
               <button type="button" onClick={closeForm} className="px-5 py-2 rounded-lg border border-border text-sm text-muted hover:text-ink transition-colors">
                 Cancel

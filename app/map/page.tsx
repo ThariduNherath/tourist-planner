@@ -17,7 +17,7 @@ export default function MapPage() {
       <CategoryFilter active={category} onChange={setCategory} />
       {loading && <p className="text-muted text-sm">Loading...</p>}
       {error && <p className="text-terracotta text-sm">Error: {error}</p>}
-      <div className="h-[70vh] rounded-xl overflow-hidden border border-border">
+      <div className="h-[50vh] min-h-[320px] rounded-xl overflow-hidden border border-border">
         <MapViewLoader places={list} height="100%" wheel />
       </div>
     </div>

@@ -14,5 +14,7 @@ export interface Place {
   opening_time?: string | null;
   closing_time?: string | null;
   facilities?: string[] | null;
+  entry_fee?: string | null;
+  best_time?: string | null;
   created_at?: string;
 }

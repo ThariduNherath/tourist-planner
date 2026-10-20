@@ -1,33 +1,34 @@
 # Tourist Planner
 
-A local day-visit planner for Nugawela, near Kandy, built with Next.js, TypeScript, Tailwind CSS, Supabase, and Leaflet. The app helps visitors discover nearby attractions, view details, build a custom itinerary, and manage a curated list of places from an admin dashboard.
+A local day-visit planner for Nugawela, near Kandy (25 km radius), built with Next.js, TypeScript, Tailwind CSS, Supabase, and Leaflet. Visitors can discover nearby attractions, view details, and build a one-day itinerary with timings and travel estimates. Administrators manage the place catalog from a secure dashboard.
+
+ITE2953 Programming Group Project (25S1) 
 
 ## Overview
 
-This project is designed for a tourism experience in a small local area. Visitors can:
+Visitors can:
 
-- browse places by category
-- read descriptions, timings, travel tips, and distances
-- view the location on an interactive map
-- save a one-day route in the browser
-- print or copy a plan for mobile use during travel
+- browse places, search, sort, and filter by category
+- read descriptions, opening hours, entry fee, best time to visit, facilities, travel tips, and distance
+- view places on an interactive map and open directions in Google Maps
+- build a one-day plan: add stops, reorder them, set time spent at each stop
+- see arrival and leave times, distance and estimated travel time between stops, and opening-hours warnings
+- copy the plan or print / save it as PDF
 
 Administrators can:
 
 - sign in securely with Supabase Auth
-- add new places
-- edit place details
-- delete place entries
-- keep the public catalog current and accurate
+- add, edit, and delete places (with a map location picker)
+- view dashboard statistics (places per category, average distance, image coverage)
 
 ## Tech stack
 
-- Next.js 14 with App Router
-- React 18 + TypeScript
+- Next.js 14 (App Router), React 18, TypeScript
 - Tailwind CSS
-- Supabase for database + authentication
-- Leaflet + react-leaflet for map rendering
-- Jest for test support
+- Supabase (PostgreSQL, Auth, Row Level Security)
+- Leaflet + react-leaflet with OpenStreetMap tiles (no API key needed)
+- Jest for unit tests
+- Vercel for hosting, Git/GitHub for version control
 
 ## Project structure
 
@@ -35,95 +36,102 @@ Administrators can:
 .
 ├── app/
 │   ├── admin/
-│   │   ├── dashboard/
-│   │   │   └── page.tsx        # admin CRUD dashboard
-│   │   └── login/
-│   │       └── page.tsx        # admin login
-│   ├── map/
-│   │   └── page.tsx            # full map view
+│   │   ├── dashboard/page.tsx   # admin CRUD dashboard
+│   │   └── login/page.tsx       # admin login
+│   ├── map/page.tsx             # full map view
 │   ├── places/
-│   │   ├── page.tsx            # place list and filters
-│   │   └── [id]/
-│   │       └── page.tsx        # detailed place page
-│   ├── plan/
-│   │   └── page.tsx           # itinerary builder
+│   │   ├── page.tsx             # place list, search, filters
+│   │   └── [id]/page.tsx        # place detail page
+│   ├── plan/page.tsx            # day-plan builder
 │   ├── globals.css
 │   ├── layout.tsx
-│   └── page.tsx               # home page
+│   └── page.tsx                 # home page
 ├── components/
 │   ├── AmbientBackground.tsx
 │   ├── CategoryFilter.tsx
-│   ├── DataContext.tsx        # place data provider
+│   ├── DataContext.tsx          # places data provider
 │   ├── HeroBanner.tsx
 │   ├── LocationPicker.tsx
 │   ├── MapView.tsx
 │   ├── MapViewLoader.tsx
 │   ├── NavBar.tsx
 │   ├── PlaceCard.tsx
-│   ├── PlanContext.tsx        # local plan provider
+│   ├── PlanContext.tsx          # local day-plan provider
 │   └── Toast.tsx
 ├── lib/
-│   ├── supabase.ts            # browser Supabase client
-│   ├── supabase-server.ts     # server-side Supabase client
-│   ├── types.ts               # place/category types
-│   └── utils.ts               # formatting and distance helpers
-├── public/
-│   └── hero/
-├── supabase/
-│   └── schema.sql             # database schema and seed data
-├── tests/
-│   └── utils.test.ts
-├── .env.example               # environment template
-├── middleware.ts              # admin access protection
+│   ├── supabase.ts              # browser Supabase client
+│   ├── supabase-server.ts       # server-side Supabase client
+│   ├── types.ts                 # Place / Category types
+│   └── utils.ts                 # time, distance, travel-time helpers
+├── public/hero/                 # hero images
+├── supabase/schema.sql          # schema, policies, seed data
+├── tests/utils.test.ts          # Jest unit tests
+├── .env.example
+├── middleware.ts                # admin route protection
 ├── next.config.js
 ├── package.json
 ├── tailwind.config.ts
 ├── tsconfig.json
 ├── jest.config.js
-├── README.md
-└── text.txt
+└── README.md
 ```
 
 ## Core user flows
 
-### Public visitor experience
+### Public visitor
 
-1. A user lands on the home page and sees favourite nearby attractions.
-2. They browse places and filter by category.
-3. They open a place detail page to read the description, timings, and travel tips.
-4. They add chosen stops to the personal day plan.
-5. They reorder, remove, or adjust visit durations for each stop.
-6. They view the route on the map and print/copy the final itinerary.
+1. Land on the home page and see nearby favourites.
+2. Browse places, search, sort, and filter by category.
+3. Open a place to see hours, entry fee, best time, facilities, tips, and map.
+4. Add stops to the day plan.
+5. On the plan page, set the start time, reorder stops, and choose time at each stop.
+6. Review the timeline, travel estimates, and route on the map, then copy or print the plan.
 
-### Admin workflow
+### Admin
 
-1. Admin user signs in at `/admin/login`.
-2. App checks Supabase Auth session and verifies admin role.
-3. Admin can create new place entries or update existing records.
-4. Changes are sent to the `places` table in Supabase.
-5. Public pages immediately reflect the latest data through the client fetch layer.
+1. Sign in at `/admin/login`.
+2. The app checks the Supabase session and confirms the user is in the `admins` table.
+3. Create, edit, or delete places.
+4. Changes are written to the `places` table and appear on public pages after reload.
 
 ## Data model
 
-The main database table is `places` and is defined in `supabase/schema.sql`.
+Main table: `places` (defined in `supabase/schema.sql`).
 
-Key fields:
+| Column | Description |
+|---|---|
+| `id` | record identifier |
+| `name` | place title |
+| `category` | Religious, Nature, Heritage, Cultural, or Sightseeing |
+| `distance_km` | approximate distance from Nugawela |
+| `description` | general description |
+| `opening_time`, `closing_time` | optional opening and closing times |
+| `opening_hours` | fallback text when exact times are not available |
+| `entry_fee` | optional text, e.g. "Free" or "Rs. 1,000 (foreign) / Rs. 100 (local)" |
+| `best_time` | optional text, e.g. "Early morning, 6-9 AM" |
+| `travel_tips` | practical tips (dress code, parking, etc.) |
+| `facilities` | text array of amenities |
+| `latitude`, `longitude` | map coordinates |
+| `image_url` | optional image URL |
+| `created_at` | timestamp |
 
-- `id`: record identifier
-- `name`: place title
-- `category`: category such as Religious, Nature, Heritage, Cultural, or Sightseeing
-- `distance_km`: approximate distance from a central location
-- `description`: general description of the place
-- `opening_time`: optional opening time
-- `closing_time`: optional closing time
-- `opening_hours`: fallback text if specific hours are not available
-- `travel_tips`: practical tips for visitors
-- `latitude` and `longitude`: map coordinates
-- `image_url`: optional image source
-- `facilities`: string array or list of amenities
-- `created_at`: timestamp
+Admin table: `admins` (`user_id` references `auth.users`).
 
-The TypeScript type for this model lives in `lib/types.ts`.
+The day plan is not stored in the database. It is kept in the browser (`localStorage`).
+
+The TypeScript type lives in `lib/types.ts`.
+
+## Travel time estimate
+
+For each leg between two consecutive stops:
+
+- distance = straight-line (haversine) distance between the two places
+- road distance is approximated as distance x 1.4
+- speed is chosen automatically from the leg distance: `min(40, 20 + 2 x km)` km/h (short city legs are slower, longer legs faster)
+- time = road distance / speed, rounded to the nearest 5 minutes (minimum 5)
+- the visitor can type a speed override on the plan page to apply one speed to all legs
+
+This is an approximation, not live routing or real traffic data.
 
 ## Environment setup
 
@@ -135,13 +143,11 @@ npm install
 
 ### 2. Create the environment file
 
-Copy the example file and fill in your Supabase values:
-
 ```bash
 copy .env.example .env.local
 ```
 
-Example contents:
+Contents:
 
 ```env
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
@@ -150,57 +156,50 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 
 ### 3. Create a Supabase project
 
-1. Open Supabase.
-2. Create a new project.
-3. Open the SQL editor.
-4. Run the full contents of `supabase/schema.sql`.
-5. This creates the `places` table, inserts seed records, and configures the required policies.
+1. Open Supabase and create a new project.
+2. Open the SQL editor and run the full contents of `supabase/schema.sql`.
+3. This creates the `places` and `admins` tables, seed records, and policies.
+
+If your database was created before `entry_fee` and `best_time` were added, run:
+
+```sql
+alter table places add column if not exists entry_fee text;
+alter table places add column if not exists best_time text;
+```
 
 ### 4. Create an admin account
 
-1. Go to Supabase Dashboard → Authentication → Users.
-2. Add an admin user.
-3. Use those credentials at `/admin/login`.
+1. Supabase Dashboard, Authentication, Users: add a user.
+2. Insert that user's id into the `admins` table:
 
-## Runtime and local development
+```sql
+insert into admins (user_id) values ('<auth-user-uuid>');
+```
 
-Start the app:
+3. Sign in at `/admin/login`.
+
+## Local development
 
 ```bash
 npm run dev
 ```
 
-Open:
-
-```text
-http://localhost:3000
-```
+Open `http://localhost:3000`.
 
 ## Admin security model
 
-The app uses a simple but effective protection flow:
+- `middleware.ts` redirects unauthenticated visitors away from `/admin/dashboard`.
+- The dashboard checks the Supabase session and verifies the user exists in the `admins` table.
+- Writes to `places` are enforced by Supabase Row Level Security (public read, admin-only write). This is the real protection; client-side checks are for user experience.
 
-- `middleware.ts` blocks unauthenticated access to `/admin/dashboard`
-- the admin dashboard checks the current Supabase session
-- a database lookup verifies that the user belongs to the `admins` table
-- writes to the `places` table are protected by Supabase Row Level Security
+## Deployment (Vercel)
 
-This prevents public users from modifying data while still allowing the admin to manage content from the app.
-
-## Deployment
-
-The project is ready for deployment on Vercel.
-
-### Vercel deployment steps
-
-1. Push this project to GitHub.
+1. Push the project to GitHub.
 2. Import the repository in Vercel.
-3. Add the required environment variables:
-   - `NEXT_PUBLIC_SUPABASE_URL`
-   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-4. Deploy the app.
+3. Add environment variables `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
+4. Deploy.
 
-## Useful scripts
+## Scripts
 
 ```bash
 npm run dev
@@ -212,59 +211,48 @@ npm run lint
 
 ## Testing
 
-The repo includes a simple Jest setup for utility validation.
+Unit tests (Jest) cover the helpers in `lib/utils.ts`: category filtering, distance sum and sorting, time formatting, minutes conversion, haversine distance, travel time, and automatic speed.
 
 ```bash
 npm run test
 ```
 
+Manual test cases (browse, filter, plan builder, admin CRUD, route protection, mobile layout) are documented in the project report, Chapter 5.
+
 ## Troubleshooting
 
-### Map or Leaflet issues
-
-If you hit dependency problems with Leaflet packages, run:
+### Map or Leaflet install issues
 
 ```bash
 npm install --legacy-peer-deps
 ```
 
-### Admin login is redirecting
+### Admin login keeps redirecting
 
-Check the following:
-
-- `NEXT_PUBLIC_SUPABASE_URL` is correct
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY` is present
+- `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` are set correctly
 - the user exists in Supabase Auth
-- the user record is present in the `admins` table
+- the user's id is present in the `admins` table
 
-### Data is empty on the public pages
+### Public pages show no data
 
-Check if:
+- the `places` table exists and the seed script ran
+- the public read policy on `places` is enabled
+- the environment variables point to the right Supabase project
 
-- the `places` table exists
-- the SQL seed script ran successfully
-- the browser client can access the Supabase project
-- the public table policies allow read access
+### Saving a place fails with a column error
 
-## Contributing
+- run the `alter table` statements in the environment setup section to add `entry_fee` and `best_time`
 
-To extend this app:
+## Scope and limitations
 
-- keep business logic in `lib/` helpers where possible
-- keep the route pages focused on UI flow and composition
-- store shared state in the provider components rather than duplicating fetch logic
-- keep styles consistent with the existing Tailwind theme
+- Focused on information and one-day visit planning: no booking, no payment, no hotel or transport reservation.
+- Travel time is an estimate based on straight-line distance, not live routing.
+- The day plan is stored per browser and is not synced across devices.
+- The map uses free OpenStreetMap tiles.
 
-## Documentation index
+## Future work
 
-For more detailed instructions, see:
-
-- [docs/README.md](docs/README.md)
-- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
-- [docs/SETUP.md](docs/SETUP.md)
-
-## Notes
-
-- The project is intentionally scoped to a single-day local tourist planner and does not include booking or payment flows.
-- The map uses free OpenStreetMap tiles and does not require an API key.
-- The itinerary persists locally in the browser using `localStorage`, which is appropriate for a no-login route planner.
+- public transport information
+- distance-radius filter
+- auto-optimised stop order
+- real routing API for accurate travel times
