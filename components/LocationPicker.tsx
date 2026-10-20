@@ -17,7 +17,13 @@ interface Props { pos: [number, number] | null; onPick: (lat: number, lng: numbe
 
 export default function LocationPicker({ pos, onPick }: Props) {
   return (
-    <MapContainer center={pos ?? [7.2936, 80.6413]} zoom={11}>
+    <MapContainer
+      center={pos ?? [7.2936, 80.6413]}
+      zoom={11}
+      zoomAnimation={false}
+      fadeAnimation={false}
+      markerZoomAnimation={false}
+    >
       <TileLayer attribution="&copy; OpenStreetMap contributors" url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
       <Click onPick={onPick} />
       {pos && <Marker position={pos} icon={icon} />}
