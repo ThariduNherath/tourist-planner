@@ -44,7 +44,13 @@ export default function HomePage() {
       <section className="mt-12">
         <div className="flex items-end justify-between mb-4">
           <h2 className="font-display text-2xl text-ink">Nearby favourites</h2>
-          <Link href="/places" className="text-sm text-gold hover:text-gold-hover">View all →</Link>
+         <Link
+  href="/places"
+  className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gold/40 text-sm font-medium text-gold hover:bg-gold hover:text-bg transition-all duration-300 shadow-sm"
+>
+  View all
+  <span className="transform transition-transform group-hover:translate-x-1">→</span>
+</Link>
         </div>
         {loading && <p className="text-muted text-sm">Loading places...</p>}
         {error && <p className="text-terracotta text-sm">Error: {error}</p>}

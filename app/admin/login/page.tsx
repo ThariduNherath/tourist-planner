@@ -54,12 +54,21 @@ export default function AdminLoginPage() {
 
   return (
     <div className="max-w-sm mx-auto mt-6">
-      <Link href="/" className="inline-flex items-center gap-1.5 text-sm text-jade-light hover:text-gold transition-colors mb-4">
-        <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M19 12H5M12 19l-7-7 7-7" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-        Back to Explore
-      </Link>
+     <Link
+  href="/"
+  className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border bg-surface text-sm font-medium text-ink hover:border-gold hover:text-gold transition-all duration-300 shadow-sm group mb-6"
+>
+  <svg
+    viewBox="0 0 24 24"
+    className="w-4 h-4 transform transition-transform group-hover:-translate-x-1"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.5"
+  >
+    <path d="M19 12H5M12 19l-7-7 7-7" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+  Back to Explore
+</Link>
 
       <div className="bg-surface border border-border rounded-xl p-6 animate-fade-up">
         <h1 className="font-display text-2xl text-ink mb-4">Admin Login</h1>

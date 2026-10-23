@@ -26,7 +26,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <NavBar />
               <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8">{children}</main>
               <footer className="text-center text-xs text-muted py-10 border-t border-border mt-10">
-              Local Tourist Day-Visit Planner
+              Local Tourist Day Visit Planner
               </footer>
             </PlanProvider>
           </PlacesProvider>

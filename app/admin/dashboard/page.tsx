@@ -213,12 +213,28 @@ export default function AdminDashboard() {
             {email} · updated {updatedAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
           </p>
         </div>
-        <div className="flex gap-3">
-          <button onClick={refresh} disabled={refreshing} className="text-sm text-gold hover:text-gold-hover disabled:opacity-50">
-            {refreshing ? "Refreshing..." : "↻ Refresh"}
-          </button>
-          <button onClick={() => setConfirmLogout(true)} className="text-sm text-terracotta font-medium hover:opacity-70">Log out</button>
-        </div>
+        <div className="flex items-center gap-2.5">
+  {/* Refresh Button */}
+  <button
+    onClick={refresh}
+    disabled={refreshing}
+    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-border bg-surface text-xs font-medium text-ink hover:border-gold hover:text-gold disabled:opacity-50 transition-all duration-300 shadow-sm active:scale-95"
+  >
+    <span className={`inline-block ${refreshing ? "animate-spin" : ""}`}>↻</span>
+    {refreshing ? "Refreshing..." : "Refresh"}
+  </button>
+
+  {/* Log out Button */}
+  <button
+    onClick={() => setConfirmLogout(true)}
+    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-terracotta/30 bg-terracotta/10 text-xs font-medium text-terracotta hover:bg-terracotta hover:text-white transition-all duration-300 shadow-sm active:scale-95"
+  >
+    <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+    </svg>
+    Log out
+  </button>
+</div>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
